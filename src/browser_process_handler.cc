@@ -17,7 +17,7 @@
 #include "client_rpc_commands.h"
 #include "http_request_client.h"
 #include "http_request_rpc_commands.h"
-#include "rpc.hpp"
+#include "util.hpp"
 
 const char kEvalMessage[] = "Eval";
 

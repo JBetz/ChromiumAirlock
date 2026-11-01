@@ -9,7 +9,7 @@
 #include <map>
 #include <string>
 #include "include/base/cef_logging.h"
-#include "rpc.hpp"
+#include "util.hpp"
 #include <include/cef_parser.h>
 
 const char kOnFocusMessage[] = "RenderProcessHandler.OnFocus";

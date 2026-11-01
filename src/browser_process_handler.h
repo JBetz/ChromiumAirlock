@@ -13,7 +13,6 @@
 #include "include/cef_browser_process_handler.h"
 #include "include/cef_server.h"
 #include "process_handler.h"
-#include "rpc.hpp"
 
 class BrowserHandler;
 

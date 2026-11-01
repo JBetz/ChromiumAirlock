@@ -1,7 +1,6 @@
 #include "http_request_client.h"
 
 #include "browser_process_handler.h"
-#include "rpc.hpp"
 #include <include/cef_parser.h>
 
 HttpRequestClient::HttpRequestClient(CefRefPtr<BrowserProcessHandler> handler,

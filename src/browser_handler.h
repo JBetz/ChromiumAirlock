@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "include/cef_client.h"
-#include "rpc.hpp"
 
 class BrowserProcessHandler;
 

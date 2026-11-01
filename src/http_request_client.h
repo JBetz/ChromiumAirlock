@@ -1,7 +1,6 @@
 #pragma once
 
 #include "include/cef_urlrequest.h"
-#include "rpc.hpp"
 
 class BrowserProcessHandler;
 

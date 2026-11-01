@@ -9,7 +9,6 @@
 #include <include/wrapper/cef_closure_task.h>
 
 #include "browser_process_handler.h"
-#include "rpc.hpp"
 
 BrowserHandler::BrowserHandler(CefRefPtr<BrowserProcessHandler> browserProcessHandler,
                                CefPoint windowOrigin,

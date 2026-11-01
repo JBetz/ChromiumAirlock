@@ -34,7 +34,7 @@ set(CEFPROCESSRUNNER_SRCS
   # response_body_filter.h
   rpc_command.cc
   rpc_command.h
-  rpc.hpp)
+  util.hpp)
 set(CEFPROCESSRUNNER_SRCS_WINDOWS
   cefprocessrunner_win.cc)
 APPEND_PLATFORM_SOURCES(CEFPROCESSRUNNER_SRCS)
