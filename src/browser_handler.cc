@@ -86,6 +86,17 @@ void BrowserHandler::OnPaint(CefRefPtr<CefBrowser> browser,
                              const void* buffer,
                              int width,
                              int height) {
+  // TODO: Reusable / Ping-Pong Shared Memory Buffer
+  // Currently, every frame (up to 60fps) creates, maps, duplicates, and closes
+  // a new Win32 FileMapping handle. This causes significant kernel handle churn
+  // and allocation overhead under heavy paint loads.
+  //
+  // Optimization:
+  //   1. Maintain a persistent shared memory mapping (or a double-buffered pair
+  //      to avoid tearing) sized to (width * height * 4).
+  //   2. Only recreate/grow the file mapping when the window dimensions change.
+  //   3. Pass the persistent handle (or buffer index 0/1) to application so
+  //   memory is mapped once and reused continuously.
   int bufferSize = width * height * 4;
   HANDLE fileMapping = CreateFileMappingW(
       INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, bufferSize, NULL);
@@ -141,6 +152,17 @@ void BrowserHandler::OnAcceleratedPaint(CefRefPtr<CefBrowser> browser,
                                         PaintElementType type,
                                         const RectList& dirtyRects,
                                         const CefAcceleratedPaintInfo& info) {
+  // TODO: GPU Texture Copy / Synchronization
+  // `info.shared_texture_handle` points directly to CEF's active GPU render
+  // buffer. If CEF begins rasterizing the next frame before the host
+  // application finishes sampling or rendering this texture, visual tearing or
+  // corruption can occur.
+  //
+  // Optimization:
+  //   1. Copy the texture on the GPU (e.g. via D3D11 CopyResource) into a local
+  //      staging texture before handing it off, OR
+  //   2. Use a shared D3D11 KeyedMutex / NT Fence to coordinate read/write
+  //      locks between the CEF process and the host application.
   HANDLE sourceHandle = info.shared_texture_handle;
   HANDLE applicationProcessHandle =
       browserProcessHandler->GetApplicationProcessHandle();
