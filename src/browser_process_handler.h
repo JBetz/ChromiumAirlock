@@ -33,6 +33,9 @@ class BrowserProcessHandler : public ProcessHandler,
   CefRefPtr<BrowserHandler> GetBrowserHandler(int browserId);
   void RemoveBrowserHandler(int browserId);
   HANDLE GetApplicationProcessHandle();
+  void RegisterBrowser(int browserId,
+                       CefRefPtr<BrowserHandler> browserHandler,
+                       CefRefPtr<CefBrowser> browser);
 
   // CefBrowserProcessHandler methods.
   CefRefPtr<CefBrowserProcessHandler> GetBrowserProcessHandler() override;

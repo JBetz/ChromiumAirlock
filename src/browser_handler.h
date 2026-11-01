@@ -22,6 +22,7 @@ class BrowserHandler : public CefClient,
                        CefDownloadHandler {
  public:
   BrowserHandler(CefRefPtr<BrowserProcessHandler> browserProcessHandler,
+                 CefString creationRequestId,
                  CefPoint windowOrigin,
                  CefRect pageRectangle);
   
@@ -90,6 +91,7 @@ class BrowserHandler : public CefClient,
   bool OnTooltip(CefRefPtr<CefBrowser> browser, CefString& text) override;
 
   // CefLifeSpanHandler:
+  void OnAfterCreated(CefRefPtr<CefBrowser> browser) override;
   bool OnBeforePopup(
       CefRefPtr<CefBrowser> browser,
       CefRefPtr<CefFrame> frame,
@@ -181,6 +183,7 @@ class BrowserHandler : public CefClient,
   using TimePoint = std::chrono::steady_clock::time_point;
 
   CefRefPtr<BrowserProcessHandler> browserProcessHandler;
+  CefString creationRequestId;
   CefRect pageRectangle;
   CefPoint windowOrigin;
   std::optional<TimePoint> createdAt;

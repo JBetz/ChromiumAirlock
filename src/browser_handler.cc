@@ -11,9 +11,11 @@
 #include "browser_process_handler.h"
 
 BrowserHandler::BrowserHandler(CefRefPtr<BrowserProcessHandler> browserProcessHandler,
+                               CefString creationRequestId,
                                CefPoint windowOrigin,
                                CefRect pageRectangle)
     : browserProcessHandler(browserProcessHandler),
+      creationRequestId(creationRequestId),
       windowOrigin(windowOrigin),
       pageRectangle(pageRectangle) {}
 
@@ -317,6 +319,15 @@ void BrowserHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
   this->MarkDestroyed();
   browserProcessHandler->RemoveBrowserHandler(browser->GetIdentifier());
   browserProcessHandler->SendRequest("Browser", browser->GetIdentifier(), "OnBeforeClose");
+}
+
+void BrowserHandler::OnAfterCreated(CefRefPtr<CefBrowser> browser) {
+  int browserId = browser->GetIdentifier();
+  browserProcessHandler->RegisterBrowser(browserId, this, browser);
+  CefRefPtr<CefValue> returnValue = CefValue::Create();
+  returnValue->SetInt(browserId);
+  browserProcessHandler->SendResponse(creationRequestId, returnValue);
+  this->MarkCreated();
 }
 
 bool BrowserHandler::OnBeforePopup(

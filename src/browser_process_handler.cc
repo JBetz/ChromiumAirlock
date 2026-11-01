@@ -72,6 +72,13 @@ void BrowserProcessHandler::RemoveBrowserHandler(int browserId) {
   }
 }
 
+void BrowserProcessHandler::RegisterBrowser(int browserId,
+                                            CefRefPtr<BrowserHandler> browserHandler,
+                                            CefRefPtr<CefBrowser> browser) {
+  std::lock_guard<std::mutex> lock(entriesMutex);
+  browserEntries[browserId] = std::make_pair(browserHandler, browser);
+}
+
 CefRefPtr<CefBrowserProcessHandler>
 BrowserProcessHandler::GetBrowserProcessHandler() {
   return this;
@@ -223,30 +230,17 @@ void BrowserProcessHandler::CreateBrowser(
 
   CefRefPtr<CefDictionaryValue> extraInfo = CefDictionaryValue::Create();
   CefRefPtr<BrowserHandler> handler =
-      new BrowserHandler(this, windowOrigin, rectangle);
+      new BrowserHandler(this, requestId, windowOrigin, rectangle);
 
   CefRefPtr<CefRequestContext> requestContext =
       private_ ? CefRequestContext::CreateContext(CefRequestContextSettings(),
                                                   nullptr)
                : CefRequestContext::GetGlobalContext();
 
-  CefRefPtr<CefBrowser> browser = CefBrowserHost::CreateBrowserSync(
+  bool success = CefBrowserHost::CreateBrowser(
       windowInfo, handler, url, browserSettings, extraInfo, requestContext);
-
-  if (browser) {
-    int browserId = browser->GetIdentifier();
-    {
-      std::lock_guard<std::mutex> lock(entriesMutex);
-      browserEntries[browserId] = {handler, browser};
-    }
-    LOG(INFO) << "Created browser on UI thread; id=" << browserId
-              << " url=" << url;
-    CefRefPtr<CefValue> returnValue = CefValue::Create();
-    returnValue->SetInt(browserId);
-    this->SendResponse(requestId, returnValue);
-    handler->MarkCreated();
-  } else {
-    LOG(ERROR) << "CreateBrowserSync returned null";
+  if (!success) {
+    this->SendErrorResponse(requestId, "CreateBrowser failed to initiate");
   }
 }
 
