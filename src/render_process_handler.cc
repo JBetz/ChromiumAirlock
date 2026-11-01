@@ -272,7 +272,8 @@ void RenderProcessHandler::OnContextCreated(CefRefPtr<CefBrowser> browser,
 
   std::string shimScript = R"(
     (function(modifyHistory, navigate) {
-      const userActivation = navigator.userActivation || {};
+
+      // helper function for resolving relative URLs to absolute URLs
       function resolveUrl(urlString) {
         try {
           return new URL(String(urlString ?? ''), document.baseURI || location.href).href;
@@ -280,21 +281,17 @@ void RenderProcessHandler::OnContextCreated(CefRefPtr<CefBrowser> browser,
           return String(urlString || '');
         }
       }
-
+ 
+      // history shims
       const originalPushState = history.pushState.bind(history);
-      const originalReplaceState = history.replaceState.bind(history);
       history.pushState = function(state, unused, url) {
         originalPushState(state, unused, url);
-        const isUserGesture = userActivation ? userActivation.isActive : false;
-        const hasBeenActive = userActivation ? userActivation.hasBeenActive : false;
-        modifyHistory('pushState', state, resolveUrl(url), isUserGesture, hasBeenActive);
+        modifyHistory('pushState', state, resolveUrl(url), navigator.userActivation.isActive, navigator.userActivation.hasBeenActive);
       };
-
+      const originalReplaceState = history.replaceState.bind(history);
       history.replaceState = function(state, unused, url) {
         originalReplaceState(state, unused, url);
-        const isUserGesture = userActivation ? userActivation.isActive : false;
-        const hasBeenActive = userActivation ? userActivation.hasBeenActive : false;
-        modifyHistory('replaceState', state, resolveUrl(url), isUserGesture, hasBeenActive);
+        modifyHistory('replaceState', state, resolveUrl(url), navigator.userActivation.isActive, navigator.userActivation.hasBeenActive);
       };
       history.back = function() { 
         navigate('delta', -1, null);
@@ -306,6 +303,7 @@ void RenderProcessHandler::OnContextCreated(CefRefPtr<CefBrowser> browser,
         navigate('delta', delta || 0, null);
       };
 
+      // navigation shims
       const resolved = { 
         committed: Promise.resolve(),
         finished: Promise.resolve()
