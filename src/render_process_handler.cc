@@ -281,24 +281,17 @@ void RenderProcessHandler::OnContextCreated(CefRefPtr<CefBrowser> browser,
         }
       }
 
-      let _state = history.state;
-      Object.defineProperty(history, 'state', { 
-        get: () => _state 
-      });
-      Object.defineProperty(history, '_setState', {
-        value: function(state) { 
-          _state = state; 
-        },
-        enumerable: false
-      });
+      const originalPushState = history.pushState.bind(history);
+      const originalReplaceState = history.replaceState.bind(history);
       history.pushState = function(state, unused, url) {
-        _state = state;
+        originalPushState(state, unused, url);
         const isUserGesture = userActivation ? userActivation.isActive : false;
         const hasBeenActive = userActivation ? userActivation.hasBeenActive : false;
         modifyHistory('pushState', state, resolveUrl(url), isUserGesture, hasBeenActive);
       };
+
       history.replaceState = function(state, unused, url) {
-        _state = state;
+        originalReplaceState(state, unused, url);
         const isUserGesture = userActivation ? userActivation.isActive : false;
         const hasBeenActive = userActivation ? userActivation.hasBeenActive : false;
         modifyHistory('replaceState', state, resolveUrl(url), isUserGesture, hasBeenActive);
