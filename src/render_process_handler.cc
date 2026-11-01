@@ -128,7 +128,7 @@ class HistoryHandler : public CefV8Handler {
         request->SetString("method", "OnPushState");
         requestArguments->SetString("frameId", frame->GetIdentifier());
         requestArguments->SetBool("isMainFrame", frame->IsMain());
-        requestArguments->SetString("state", arguments[1]->GetStringValue());
+        requestArguments->SetValue("state", CefV8ValueToCefValue(arguments[1]));
         requestArguments->SetString("url", arguments[2]->GetStringValue());
         requestArguments->SetBool("isActive", arguments[3]->GetBoolValue());
         requestArguments->SetBool("hasBeenActive", arguments[4]->GetBoolValue());
@@ -136,7 +136,7 @@ class HistoryHandler : public CefV8Handler {
         request->SetString("method", "OnReplaceState");
         requestArguments->SetString("frameId", frame->GetIdentifier());
         requestArguments->SetBool("isMainFrame", frame->IsMain());
-        requestArguments->SetString("state", arguments[1]->GetStringValue());
+        requestArguments->SetValue("state", CefV8ValueToCefValue(arguments[1]));
         requestArguments->SetString("url", arguments[2]->GetStringValue());
         requestArguments->SetBool("isActive", arguments[3]->GetBoolValue());
         requestArguments->SetBool("hasBeenActive", arguments[4]->GetBoolValue());
@@ -176,17 +176,17 @@ class NavigationHandler : public CefV8Handler {
       if (action == "url") {
         request->SetString("method", "OnNavigateByUrl");
         requestArguments->SetString("url", arguments[1]->GetStringValue());
-        requestArguments->SetString("state", arguments[2]->GetStringValue());
-        requestArguments->SetString("info", arguments[3]->GetStringValue());
+        requestArguments->SetValue("state", CefV8ValueToCefValue(arguments[2]));
+        requestArguments->SetValue("info", CefV8ValueToCefValue(arguments[3]));
         requestArguments->SetString("history", arguments[4]->GetStringValue());
       } else if (action == "delta") {
         request->SetString("method", "OnNavigateByDelta");
         requestArguments->SetInt("delta", arguments[1]->GetIntValue());
-        requestArguments->SetString("info", arguments[2]->GetStringValue());
+        requestArguments->SetValue("info", CefV8ValueToCefValue(arguments[2]));
       } else if (action == "key") {
         request->SetString("method", "OnNavigateByKey");
         requestArguments->SetString("key", arguments[1]->GetStringValue());
-        requestArguments->SetString("info", arguments[2]->GetStringValue());
+        requestArguments->SetValue("info", CefV8ValueToCefValue(arguments[2]));
       } else {
         return false;
       }
@@ -295,13 +295,13 @@ void RenderProcessHandler::OnContextCreated(CefRefPtr<CefBrowser> browser,
         _state = state;
         const isUserGesture = userActivation ? userActivation.isActive : false;
         const hasBeenActive = userActivation ? userActivation.hasBeenActive : false;
-        modifyHistory('pushState', JSON.stringify(state), resolveUrl(url), isUserGesture, hasBeenActive);
+        modifyHistory('pushState', state, resolveUrl(url), isUserGesture, hasBeenActive);
       };
       history.replaceState = function(state, unused, url) {
         _state = state;
         const isUserGesture = userActivation ? userActivation.isActive : false;
         const hasBeenActive = userActivation ? userActivation.hasBeenActive : false;
-        modifyHistory('replaceState', JSON.stringify(state), resolveUrl(url), isUserGesture, hasBeenActive);
+        modifyHistory('replaceState', state, resolveUrl(url), isUserGesture, hasBeenActive);
       };
       history.back = function() { 
         navigate('delta', -1, null);
@@ -322,24 +322,24 @@ void RenderProcessHandler::OnContextCreated(CefRefPtr<CefBrowser> browser,
         navigate(
             'url',
             String(url || ''),
-            JSON.stringify(opts.state === undefined ? null : opts.state),
-            JSON.stringify(opts.info === undefined ? null : opts.info),
+            opts.state === undefined ? null : opts.state,
+            opts.info === undefined ? null : opts.info,
             opts.history || 'auto');
         return resolved;
       };
       navigation.back = function(options) {
         var opts = options || {};
-        navigate('delta', -1, JSON.stringify(opts.info === undefined ? null : opts.info));
+        navigate('delta', -1, opts.info === undefined ? null : opts.info);
         return resolved;
       };
       navigation.forward = function(options) {
         var opts = options || {};
-        navigate('delta', 1, JSON.stringify(opts.info === undefined ? null : opts.info));
+        navigate('delta', 1, opts.info === undefined ? null : opts.info);
         return resolved;
       };
       navigation.traverseTo = function(key, options) {
         var opts = options || {};
-        navigate('key', String(key || ''), JSON.stringify(opts.info === undefined ? null : opts.info));
+        navigate('key', String(key || ''), opts.info === undefined ? null : opts.info);
         return resolved;
       };
     })
