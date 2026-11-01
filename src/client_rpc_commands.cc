@@ -19,11 +19,7 @@ void CreateBrowserCommand::ReadArguments() {
 
 void CreateBrowserCommand::Execute(CefRefPtr<BrowserProcessHandler> handler) {
   HWND parentHwnd = reinterpret_cast<HWND>(parentWindowHandle);
-  CefPostTask(
-      TID_UI,
-      base::BindOnce(&BrowserProcessHandler::CreateBrowser, handler,
-                     id, url, windowOrigin, rectangle, parentHwnd,
-                     windowless, hardwareAccelerated, private_));
+  handler->CreateBrowser(id, url, windowOrigin, rectangle, parentHwnd, windowless, hardwareAccelerated, private_);
 }
 
 void CreateHttpRequestCommand::ReadArguments() {
