@@ -310,29 +310,20 @@ void RenderProcessHandler::OnContextCreated(CefRefPtr<CefBrowser> browser,
         committed: Promise.resolve(),
         finished: Promise.resolve()
       };
-      navigation.navigate = function(url, options) {
-        var opts = options || {};
-        navigate(
-            'url',
-            String(url || ''),
-            opts.state === undefined ? null : opts.state,
-            opts.info === undefined ? null : opts.info,
-            opts.history || 'auto');
+      navigation.navigate = (url = '', options = {}) => {
+        navigate('url', String(url), options.state, options.info, options.history || 'auto');
         return resolved;
       };
-      navigation.back = function(options) {
-        var opts = options || {};
-        navigate('delta', -1, opts.info === undefined ? null : opts.info);
+      navigation.back = (options = {}) => {
+        navigate('delta', -1, options.info);
         return resolved;
       };
-      navigation.forward = function(options) {
-        var opts = options || {};
-        navigate('delta', 1, opts.info === undefined ? null : opts.info);
+      navigation.forward = (options = {}) => {
+        navigate('delta', 1, options.info);
         return resolved;
       };
-      navigation.traverseTo = function(key, options) {
-        var opts = options || {};
-        navigate('key', String(key || ''), opts.info === undefined ? null : opts.info);
+      navigation.traverseTo = (key = '', options = {}) => {
+        navigate('key', String(key), options.info);
         return resolved;
       };
     })
