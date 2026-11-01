@@ -304,25 +304,36 @@ void RenderProcessHandler::OnContextCreated(CefRefPtr<CefBrowser> browser,
       };
 
       // navigation shims
-      const resolved = { 
-        committed: Promise.resolve(),
-        finished: Promise.resolve()
-      };
+      
+      // TODO: Fully Robust Navigation API Support
+      // Currently, these promises resolve immediately with `navigation.currentEntry`.
+      // For full WHATWG spec compliance:
+      //   1. Pass a unique `requestId` to `navigate(...)` and store promise resolvers in a map.
+      //   2. Wait for application to process the traversal/URL change and post a message back.
+      //   3. Resolve `committed` when application initiates/commits the entry.
+      //   4. Resolve `finished` when OnLoadingStateChange indicates the document is completely loaded.
+      function createNavigationResult() {
+        const entry = window.navigation.currentEntry;
+        return {
+          committed: Promise.resolve(entry),
+          finished: Promise.resolve(entry)
+        };
+      }
       navigation.navigate = (url = '', options = {}) => {
         navigate('url', String(url), options.state, options.info, options.history || 'auto');
-        return resolved;
+        return createNavigationResult();
       };
       navigation.back = (options = {}) => {
         navigate('delta', -1, options.info);
-        return resolved;
+        return createNavigationResult();
       };
       navigation.forward = (options = {}) => {
         navigate('delta', 1, options.info);
-        return resolved;
+        return createNavigationResult();
       };
       navigation.traverseTo = (key = '', options = {}) => {
         navigate('key', String(key), options.info);
-        return resolved;
+        return createNavigationResult();
       };
     })
 )";
