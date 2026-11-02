@@ -324,9 +324,9 @@ void BrowserHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
 void BrowserHandler::OnAfterCreated(CefRefPtr<CefBrowser> browser) {
   int browserId = browser->GetIdentifier();
   browserProcessHandler->RegisterBrowser(browserId, this, browser);
-  CefRefPtr<CefValue> returnValue = CefValue::Create();
-  returnValue->SetInt(browserId);
-  browserProcessHandler->SendResponse(creationRequestId, returnValue);
+  CefRefPtr<CefValue> result = CefValue::Create();
+  result->SetInt(browserId);
+  browserProcessHandler->SendResponse(creationRequestId, result);
   this->MarkCreated();
 }
 
@@ -455,8 +455,8 @@ bool BrowserHandler::RunContextMenu(
     return false;
   }
   browserProcessHandler->RegisterPendingCallback(
-      requestId.value(), [callback](CefRefPtr<CefValue> returnValue) {
-        int commandId = returnValue->GetInt();
+      requestId.value(), [callback](CefRefPtr<CefValue> result) {
+        int commandId = result->GetInt();
         CefPostTask(TID_UI,
                     base::BindOnce(&CefRunContextMenuCallback::Continue,
                                    callback.get(), commandId, EVENTFLAG_NONE));
@@ -566,8 +566,8 @@ bool BrowserHandler::OnBeforeDownload(CefRefPtr<CefBrowser> browser,
   if (!requestId.has_value()) {
     return false;
   }
-  browserProcessHandler->RegisterPendingCallback(requestId.value(), [callback](const CefRefPtr<CefValue> returnValue) {
-    CefRefPtr<CefDictionaryValue> config = returnValue->GetDictionary();
+  browserProcessHandler->RegisterPendingCallback(requestId.value(), [callback](const CefRefPtr<CefValue> result) {
+    CefRefPtr<CefDictionaryValue> config = result->GetDictionary();
     bool shouldContinue = config->GetBool("shouldContinue");
     CefString downloadPath = config->GetString("downloadPath");
     bool showDialog = config->GetBool("showDialog");
@@ -616,8 +616,8 @@ void BrowserHandler::OnDownloadUpdated(CefRefPtr<CefBrowser> browser,
   }
   CefRefPtr<BrowserHandler> self = this;
   browserProcessHandler->RegisterPendingCallback(
-      requestId.value(), [self, callback](const CefRefPtr<CefValue> returnValue) {
-        CefString action = returnValue->GetString();
+      requestId.value(), [self, callback](const CefRefPtr<CefValue> result) {
+        CefString action = result->GetString();
         CefPostTask(TID_UI,
                     base::BindOnce(&BrowserHandler::DispatchDownloadAction,
                                    self, callback, std::move(action)));

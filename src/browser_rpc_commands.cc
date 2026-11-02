@@ -14,9 +14,9 @@ class GetSourceStringVisitor : public CefStringVisitor {
       : handler(handler), requestId(requestId) {}
 
   void Visit(const CefString& string) override {
-    CefRefPtr<CefValue> returnValue = CefValue::Create();
-    returnValue->SetString(string);
-    handler->SendResponse(requestId, returnValue);
+    CefRefPtr<CefValue> result = CefValue::Create();
+    result->SetString(string);
+    handler->SendResponse(requestId, result);
   }
 
  private:
@@ -56,9 +56,9 @@ class DownloadImageCallback : public CefDownloadImageCallback {
       }
     }
     arguments->SetList("images", images);
-    CefRefPtr<CefValue> returnValue = CefValue::Create();
-    returnValue->SetDictionary(arguments);
-    handler->SendResponse(requestId, returnValue);
+    CefRefPtr<CefValue> result = CefValue::Create();
+    result->SetDictionary(arguments);
+    handler->SendResponse(requestId, result);
   }
 
  private:

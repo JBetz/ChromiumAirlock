@@ -72,7 +72,7 @@ class BrowserProcessHandler : public ProcessHandler,
                         CefRefPtr<CefDictionaryValue> arguments);
   void HandleRpcResponse(const CefString& requestId,
                          bool success,
-                         CefRefPtr<CefValue> returnValue,
+                         CefRefPtr<CefValue> result,
                          CefRefPtr<CefValue> error);
   void RegisterPendingCallback(const CefString& requestId,
                                PendingCallback callback);
@@ -111,7 +111,7 @@ class BrowserProcessHandler : public ProcessHandler,
                         int instanceId,
                         const CefString& methodName);
   void SendResponse(const CefString& requestId,
-                    CefRefPtr<CefValue> returnValue);
+                    CefRefPtr<CefValue> result);
   void SendErrorResponse(const CefString& requestId, const CefString& message);
   void SendUnknownInstanceErrorResponse(const CefString& requestId,
                                         const CefString& className,

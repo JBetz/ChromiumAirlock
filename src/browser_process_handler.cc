@@ -186,13 +186,13 @@ void BrowserProcessHandler::OnWebSocketMessage(CefRefPtr<CefServer> server_,
     return;
   }
   try {
-    if (jsonMessageDictionary->HasKey("requestId")) {
+    if (jsonMessageDictionary->HasKey("result")) {
       CefString requestId = jsonMessageDictionary->GetString("requestId");
       bool success = jsonMessageDictionary->GetBool("success");
-      CefRefPtr<CefValue> returnValue =
+      CefRefPtr<CefValue> result =
           jsonMessageDictionary->GetValue("result");
       CefRefPtr<CefValue> error = jsonMessageDictionary->GetValue("error");
-      this->HandleRpcResponse(requestId, success, returnValue, error);
+      this->HandleRpcResponse(requestId, success, result, error);
     } else {
       CefString requestId = jsonMessageDictionary->GetString("id");
       CefString className = jsonMessageDictionary->GetString("class");
@@ -282,9 +282,9 @@ void BrowserProcessHandler::CreateHttpRequest(
     httpRequestEntries[httpRequestId] = urlRequest;
   }
 
-  CefRefPtr<CefValue> returnValue = CefValue::Create();
-  returnValue->SetInt(httpRequestId);
-  this->SendResponse(requestId, returnValue);
+  CefRefPtr<CefValue> result = CefValue::Create();
+  result->SetInt(httpRequestId);
+  this->SendResponse(requestId, result);
 }
 
 void BrowserProcessHandler::Shutdown() {
@@ -311,18 +311,18 @@ void BrowserProcessHandler::TryCloseBrowser(
     const CefRefPtr<CefBrowser> browser,
     const CefString& requestId) {
   bool canClose = browser->GetHost()->TryCloseBrowser();
-  CefRefPtr<CefValue> returnValue = CefValue::Create();
-  returnValue->SetBool(canClose);
-  this->SendResponse(requestId, returnValue);
+  CefRefPtr<CefValue> result = CefValue::Create();
+  result->SetBool(canClose);
+  this->SendResponse(requestId, result);
 }
 
 void BrowserProcessHandler::GetBrowserFrameRate(
     const CefRefPtr<CefBrowser> browser,
     const CefString& requestId) {
   int frameRate = browser->GetHost()->GetWindowlessFrameRate();
-  CefRefPtr<CefValue> returnValue = CefValue::Create();
-  returnValue->SetInt(frameRate);
-  this->SendResponse(requestId, returnValue);
+  CefRefPtr<CefValue> result = CefValue::Create();
+  result->SetInt(frameRate);
+  this->SendResponse(requestId, result);
 }
 
 void BrowserProcessHandler::SendMessage(const CefString& payload) {
@@ -531,7 +531,7 @@ BrowserProcessHandler::GetPendingCallbacks() {
 
 void BrowserProcessHandler::HandleRpcResponse(const CefString& requestId,
                                               bool success,
-                                              CefRefPtr<CefValue> returnValue,
+                                              CefRefPtr<CefValue> result,
                                               CefRefPtr<CefValue> error) {
   PendingCallback callback = nullptr;
 
@@ -546,7 +546,7 @@ void BrowserProcessHandler::HandleRpcResponse(const CefString& requestId,
 
   if (callback) {
     if (success) {
-      callback(returnValue);
+      callback(result);
     } else {
       LOG(ERROR) << "RPC response error for request: "
                  << (error ? error->GetString() : CefString("unknown error"));
