@@ -187,7 +187,7 @@ void BrowserProcessHandler::OnWebSocketMessage(CefRefPtr<CefServer> server_,
   }
   try {
     if (jsonMessageDictionary->HasKey("result")) {
-      CefString requestId = jsonMessageDictionary->GetString("requestId");
+      CefString requestId = jsonMessageDictionary->GetString("id");
       bool success = jsonMessageDictionary->GetBool("success");
       CefRefPtr<CefValue> result =
           jsonMessageDictionary->GetValue("result");
@@ -364,7 +364,7 @@ CefString BrowserProcessHandler::SendRequest(const CefString& className,
 void BrowserProcessHandler::SendResponse(const CefString& requestId,
                                          CefRefPtr<CefValue> result) {
   auto response = CefDictionaryValue::Create();
-  response->SetString("requestId", requestId);
+  response->SetString("id", requestId);
   response->SetBool("success", true);
   if (result) {
     response->SetValue("result", result);
@@ -381,7 +381,7 @@ void BrowserProcessHandler::SendErrorResponse(const CefString& requestId,
                                               const CefString& errorMessage) {
   LOG(ERROR) << errorMessage;
   auto response = CefDictionaryValue::Create();
-  response->SetString("requestId", requestId);
+  response->SetString("id", requestId);
   response->SetBool("success", false);
   response->SetNull("result");
   response->SetString("error", errorMessage);

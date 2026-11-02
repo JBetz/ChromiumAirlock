@@ -419,7 +419,7 @@ class PromiseThenHandler : public CefV8Handler {
     CefRefPtr<CefDictionaryValue> messageArguments =
         CefDictionaryValue::Create();
     CefRefPtr<CefDictionaryValue> response = CefDictionaryValue::Create();
-    response->SetString("requestId", requestId);
+    response->SetString("id", requestId);
     response->SetBool("success", true);
     response->SetValue("result", CefV8ValueToCefValue(arguments[0]));
     CefRefPtr<CefValue> json = CefValue::Create();
@@ -466,7 +466,7 @@ bool RenderProcessHandler::OnProcessMessageReceived(
       thenFunction->ExecuteFunction(retval, {onResolvedFunc});
     } else {
       CefRefPtr<CefDictionaryValue> response = CefDictionaryValue::Create();
-      response->SetString("requestId", requestId);
+      response->SetString("id", requestId);
       response->SetBool("success", success);
       if (success) {
         response->SetValue("result", CefV8ValueToCefValue(retval));
