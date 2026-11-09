@@ -1,23 +1,30 @@
 # ChromiumAirlock
-A standalone host process for the Chromium Embedded Framework (CEF) that acts as a protective buffer between Chromium and your application, exposing web controls and frame rendering over a local JSON-RPC WebSocket interface.
-
+A standalone, out-of-process host for Chromium that acts as a protective buffer between the web engine and your application. It decouples Chromium into an external, captive process, exposing rendering, navigation, and network primitives over a local JSON-RPC WebSocket interface.
 
 ## Why out of process
-Chromium's multi-process architecture isolates individual tabs, renderer engines, and GPU tasks from one another. However, standard CEF integrations stop short of protecting the host application itself: CEF forces your application process to double as the primary Chromium Browser Process.
+Chromium's internal architecture is multi-process by design, isolating tabs, rendering engines, and GPU tasks from each other. However, standard embedded frameworks (like CEF or WebView) stop short of isolating the browser from the host itself: they require your application process to double as the Chromium Browser Process.
 
-When embedded in-process, any fatal browser-level assertion, DCHECK failure, memory spike, or unhandled crash inside Chromium abruptly terminates your entire application. For live programming environments and long-running host runtimes, an unexpected crash in the web engine is particularly catastrophic.
+In that model, the host application is hostage to the web engine. A fatal assertion, unhandled error, memory pressure spike, or DCHECK abort within Chromium takes down your entire application process with zero opportunity for recovery. It also surrenders navigation control, forcing the host to react to the browser's decisions rather than driving them.
 
-**chromium-airlock** functions as an active pressure buffer between the host and Chromium:
-- **Host Protection & Fault Isolation**: The host application remains completely decoupled from Chromium's process tree. If Chromium hits a fatal assertion or panics, the host remains untouched and retains full supervisory control to restart or cleanly drop the connection.
-- **Language & Runtime Agnostic**: Host applications do not need to link C/C++ libraries, manage native memory, or adhere to CEF's rigid threading models. Any environment capable of establishing a local WebSocket connection (Smalltalk, Rust, C#, Go, Python, etc.) can drive Chromium directly.
-- **Clean Lifecycle Separation**: Eliminates message-loop synchronization, foreign signal handler installations, and runtime conflicts between the host runtime and CEF.
+**ChromiumAirlock** reverses that relationship:
+- **Fault & Crash Buffering**: Chromium runs in its own process tree on the other side of the airlock. If Chromium panics or crashes, your application hull remains intact, retaining full control to restart, inspect, or tear down the engine.
+- **Host Sovereignty**: The web engine is reduced to what it is best at: fetching web resources, executing JavaScript, and rendering pages. All authority over navigation, popups, window creation, downloads, and lifecycle decisions remains with the host application.
+- **Language & Runtime Agnostic**: Because communication takes place over standard protocols, host applications do not need to link C/C++ runtimes or match Chromium's compiler toolchains. Any environment capable of opening a local WebSocket can control the browser.
 
 ## How it works
-- **WebSocket Interface**: Runs the CEF Browser Process (which spawns and supervises Chromium's renderer and utility child processes) and listens on a local WebSocket endpoint, accepting a single controlling host connection.
-- **JSON-RPC Protocol**: Navigation, DOM/script evaluation, user input dispatch, and lifecycle notifications are exchanged as lightweight JSON messages.
-- **Low-Overhead Frame Sharing**: When using off-screen rendering (OSR), frame buffers are delivered back to the host with minimal latency:
-  - **Software OSR**: Dirty regions are mapped into Win32 shared memory and handed directly to the host process space.
-  - **Hardware-Accelerated OSR**: Direct3D shared texture handles are passed directly to the host for zero-copy GPU compositing.
+- **WebSocket Interface**: The airlock process manages Chromium's browser and child processes, listening on a dedicated local WebSocket port. It enforces a single-client policy dedicated entirely to the controlling host.
+- **JSON-RPC Protocol**: The host issues commands (navigating, evaluating scripts, injecting user input, resizing viewport) and receives notifications through lightweight JSON messages.
+- **Low-Overhead Frame Sharing**: Operates in CEF's off-screen rendering (OSR) mode, and rendered output is passed back to the host with minimal latency:
+  - **Software OSR**: Dirty rectangles and pixel buffers are written to shared memory objects and duplicated directly into the host process space.
+  - **Hardware-Accelerated OSR**: Direct3D shared texture handles are passed directly to the host for native GPU compositing.
+
+## Command-line arguments
+The executable accepts the following switches on startup:
+- `--server-port=<int>` (Required): The local TCP port the WebSocket server listens on.
+- `--application-process-id=<int>` (Required): The PID of your host application, used for Win32 handle duplication.
+- `--server-ready-event-name=<string>` (Optional): A named Win32 Event signaled as soon as the WebSocket server is initialized and ready to accept connections.
+
+Standard Chromium command-line switches can also be forwarded directly.
 
 ## Building
 
