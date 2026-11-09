@@ -32,7 +32,6 @@ Standard Chromium command-line switches can also be forwarded directly.
 - Windows 10/11
 - Visual Studio 2022 (MSVC with C++20 support)
 - CMake 3.21 or newer
-- Python 3.9+ (used by CMake to automatically download the CEF binary distribution)
 
 ### Build Steps
 1. Open a terminal and create a build directory: mkdir build cd build
