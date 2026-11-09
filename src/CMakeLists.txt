@@ -7,7 +7,7 @@
 #
 
 # cefprocessrunner sources.
-set(CEFPROCESSRUNNER_SRCS
+set(CHROMIUMPROCESSRUNNER_SRCS
   browser_handler.cc
   browser_handler.h
   browser_process_handler.cc
@@ -35,13 +35,13 @@ set(CEFPROCESSRUNNER_SRCS
   rpc_command.cc
   rpc_command.h
   util.hpp)
-set(CEFPROCESSRUNNER_SRCS_WINDOWS
-  cefprocessrunner_win.cc)
-APPEND_PLATFORM_SOURCES(CEFPROCESSRUNNER_SRCS)
-source_group(cefprocessrunner FILES ${CEFPROCESSRUNNER_SRCS})
+set(CHROMIUMPROCESSRUNNER_SRCS_WINDOWS
+  chromiumprocessrunner_win.cc)
+APPEND_PLATFORM_SOURCES(CHROMIUMPROCESSRUNNER_SRCS)
+source_group(cefprocessrunner FILES ${CHROMIUMPROCESSRUNNER_SRCS})
 
-set(CEFPROCESSRUNNER_SRCS
-  ${CEFPROCESSRUNNER_SRCS}
+set(CHROMIUMPROCESSRUNNER_SRCS
+  ${CHROMIUMPROCESSRUNNER_SRCS}
   )
 
 #
@@ -49,7 +49,7 @@ set(CEFPROCESSRUNNER_SRCS
 #
 
 # Target executable names.
-set(CEF_TARGET "CefProcessRunner")
+set(CEF_TARGET "ChromiumProcessRunner")
 ADD_LOGICAL_TARGET("libcef_lib" "${CEF_LIB_DEBUG}" "${CEF_LIB_RELEASE}")
 
 # Determine the target output directory.
@@ -61,7 +61,7 @@ SET_CEF_TARGET_OUT_DIR()
 
 if(OS_WINDOWS)
   # Executable target.
-  add_executable(${CEF_TARGET} WIN32 ${CEFPROCESSRUNNER_SRCS})
+  add_executable(${CEF_TARGET} WIN32 ${CHROMIUMPROCESSRUNNER_SRCS})
   add_dependencies(${CEF_TARGET} libcef_dll_wrapper)
   SET_EXECUTABLE_TARGET_PROPERTIES(${CEF_TARGET})
 
