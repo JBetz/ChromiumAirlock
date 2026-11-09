@@ -1,92 +1,35 @@
-This project provides a way to run CEF out-of-process and communicate with it using a JSON-RPC.
+# ChromiumAirlock
+A standalone host process for the Chromium Embedded Framework (CEF) that acts as a protective buffer between Chromium and your application, exposing web controls and frame rendering over a local JSON-RPC WebSocket interface.
 
-# Quick Links
 
-* Project Page - https://bitbucket.org/chromiumembedded/cef-project
-* Tutorial - https://bitbucket.org/chromiumembedded/cef/wiki/Tutorial
-* Support Forum - http://www.magpcss.org/ceforum/
+## Why out of process
+Chromium's multi-process architecture isolates individual tabs, renderer engines, and GPU tasks from one another. However, standard CEF integrations stop short of protecting the host application itself: CEF forces your application process to double as the primary Chromium Browser Process.
 
-# Setup
+When embedded in-process, any fatal browser-level assertion, DCHECK failure, memory spike, or unhandled crash inside Chromium abruptly terminates your entire application. For live programming environments and long-running host runtimes, an unexpected crash in the web engine is particularly catastrophic.
 
-First install some necessary tools and download the cef-project source code.
+**chromium-airlock** functions as an active pressure buffer between the host and Chromium:
+- **Host Protection & Fault Isolation**: The host application remains completely decoupled from Chromium's process tree. If Chromium hits a fatal assertion or panics, the host remains untouched and retains full supervisory control to restart or cleanly drop the connection.
+- **Language & Runtime Agnostic**: Host applications do not need to link C/C++ libraries, manage native memory, or adhere to CEF's rigid threading models. Any environment capable of establishing a local WebSocket connection (Smalltalk, Rust, C#, Go, Python, etc.) can drive Chromium directly.
+- **Clean Lifecycle Separation**: Eliminates message-loop synchronization, foreign signal handler installations, and runtime conflicts between the host runtime and CEF.
 
-1\. Install [CMake](https://cmake.org/), a cross-platform open-source build system. Version 3.21 or newer is required.
+## How it works
+- **WebSocket Interface**: Runs the CEF Browser Process (which spawns and supervises Chromium's renderer and utility child processes) and listens on a local WebSocket endpoint, accepting a single controlling host connection.
+- **JSON-RPC Protocol**: Navigation, DOM/script evaluation, user input dispatch, and lifecycle notifications are exchanged as lightweight JSON messages.
+- **Low-Overhead Frame Sharing**: When using off-screen rendering (OSR), frame buffers are delivered back to the host with minimal latency:
+  - **Software OSR**: Dirty regions are mapped into Win32 shared memory and handed directly to the host process space.
+  - **Hardware-Accelerated OSR**: Direct3D shared texture handles are passed directly to the host for zero-copy GPU compositing.
 
-2\. Install [Python](https://www.python.org/downloads/). Version 2.7.x or 3.9.x is required. If Python is not installed to the default location you can set the `PYTHON_EXECUTABLE` environment variable before running CMake (watch for errors during the CMake generation step below).
+## Building
 
-3\. Install platform-specific build tools.
+### Requirements
+- Windows 10/11
+- Visual Studio 2022 (MSVC with C++20 support)
+- CMake 3.21 or newer
+- Python 3.9+ (used by CMake to automatically download the CEF binary distribution)
 
-* Linux: Currently supported distributions include Debian 10 (Buster), Ubuntu 18 (Bionic Beaver), and related. Ubuntu 18.04 64-bit with GCC 7.5.0+ is recommended. Newer versions will likely also work but may not have been tested. Required packages include: build-essential, libgtk-3-dev.
-* MacOS: Xcode 12.2 to 15.0 building on MacOS 10.15.4 (Catalina) or newer. The Xcode command-line tools must also be installed.
-* Windows: Visual Studio 2022 building on Windows 10 or newer. Windows 10/11 64-bit is recommended.
+### Build Steps
+1. Open a terminal and create a build directory: mkdir build cd build
+2. Generate the Visual Studio 2022 solution for 32-bit Windows: cmake -G "Visual Studio 17 2022" -A Win32 ..
+3. Compile the Release build: cmake --build . --config Release
 
-4\. Download the cef-project source code from the [Downloads page](https://bitbucket.org/chromiumembedded/cef-project/downloads) or by using [Git](https://git-scm.com/) command-line tools:
-
-```
-git clone https://bitbucket.org/chromiumembedded/cef-project.git
-```
-
-# Build
-
-Now run CMake which will download the CEF binary distribution from the [Spotify automated builder](https://cef-builds.spotifycdn.com/index.html) and generate build files for your platform. Then build using platform build tools. For example, using the most recent tool versions on each platform:
-
-```
-cd /path/to/cef-project
-
-# Create and enter the build directory.
-mkdir build
-cd build
-
-# To perform a Windows build using a 32-bit CEF binary distribution:
-cmake -G "Visual Studio 17" -A Win32 ..
-# Then, open build\cef.sln in Visual Studio 2022 and select Build > Build Solution.
-```
-
-CMake supports different generators on each platform. Run `cmake --help` to list all supported generators. Generators that have been tested with CEF include:
-
-* Linux: Ninja, GCC 7.5.0+, Unix Makefiles
-* MacOS: Ninja, Xcode 12.2 to 15.0
-* Windows: Ninja, Visual Studio 2022+
-
-Ninja is a cross-platform open-source tool for running fast builds using pre-installed platform toolchains (GNU, clang, Xcode or MSVC). See comments in the "third_party/cef/cef_binary_*/CMakeLists.txt" file for Ninja usage instructions.
-
-# Examples
-
-CEF provides a number of examples that you can use as a starting point or reference for your own CEF-based development.
-
-* By default all example targets will be included in the project files generated using CMake.
-* The CEF binary distribution includes cefsimple and cefclient sample applications.
-    * The cefsimple application demonstrates the minimal implementation required for a standalone executable target and is described on the [Tutorial](https://bitbucket.org/chromiumembedded/cef/wiki/Tutorial.md) Wiki page.
-    * The cefclient application demonstrates a wide range of CEF functionality most of which is documented on the [GeneralUsage](https://bitbucket.org/chromiumembedded/cef/wiki/GeneralUsage.md) Wiki page.
-* The [examples directory](examples) contains example targets that demonstrate specific aspects of CEF functionality.
-    * See the [examples README.md file](examples/README.md) for information about the examples targets.
-    * Add `-DWITH_EXAMPLES=Off` to the cmake command-line if you do not wish to build the examples targets.
-
-# Next Steps
-
-Here are some activities you might want to try next to gain a better understanding of CEF:
-
-1\. Update the CEF version used to build your local copy of cef-project:
-
-* Visit the [Spotify automated builder](https://cef-builds.spotifycdn.com/index.html) page to see what CEF versions are available.
-* Change the "CEF_VERSION" value near the top of the [top-level CMakeLists.txt file](https://bitbucket.org/chromiumembedded/cef-project/src/master/CMakeLists.txt?fileviewer=file-view-default).
-* Re-run the cmake and build commands. Add `-DWITH_EXAMPLES=Off` to the cmake command-line to disable targets from the [examples directory](examples) because they may not build successfully with the new CEF version.
-
-2\. Add your own project source code:
-
-* Create a new "myproject" directory in the root cef-project directory (e.g. "/path/to/cef-project/myproject").
-* Copy the contents of the "third_party/cef/cef_binary_*/tests/cefsimple" directory to "myproject" as a starting point.
-* Add a new `add_subdirectory(myproject)` command near the end of [top-level CMakeLists.txt file](https://bitbucket.org/chromiumembedded/cef-project/src/master/CMakeLists.txt?fileviewer=file-view-default) after the existing add_subdirectory commands.
-* Change the "CEF_TARGET", "CEF_HELPER_TARGET" and "CEF_HELPER_OUTPUT_NAME" values in "myproject/CMakeLists.txt" replacing "cefsimple" with "myproject".
-* (Windows only) Rename the "cefclient.exe.manifest" file to "myproject.exe.manifest" in both "myproject/CMakeLists.txt" and the "myproject" directory.
-* Re-run the cmake and build commands.
-
-3\. Gain a better understanding of the cefsimple application by reading the [Tutorial](https://bitbucket.org/chromiumembedded/cef/wiki/Tutorial.md) Wiki page.
-
-4\. Fork the cef-project repository using Bitbucket and Git to store the source code for your own CEF-based project. See the [ContributingWithGit](https://bitbucket.org/chromiumembedded/cef/wiki/ContributingWithGit.md) Wiki page for details (replace all instances of "cef" with "cef-project" in those instructions).
-
-5\. Review the [GeneralUsage](https://bitbucket.org/chromiumembedded/cef/wiki/GeneralUsage.md) Wiki page for additional details on CEF implementation and usage.
-
-# Support and Contributions
-
-If you have any questions about CEF or cef-project please ask on the [CEF Forum](http://www.magpcss.org/ceforum/). If you would like to make contributions please see the "Helping Out" section of the [CEF Main Page](https://bitbucket.org/chromiumembedded/cef/).
+CMake will download and unpack the prebuilt CEF distribution automatically during configuration. You can also open build\cef.sln directly in Visual Studio to build or debug. 
