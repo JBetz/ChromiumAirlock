@@ -7,7 +7,7 @@ Chromium's internal architecture is multi-process by design, isolating tabs, ren
 In that model, the host application is hostage to the browser engine. A fatal assertion, unhandled error, memory pressure spike, or DCHECK abort within Chromium takes down your entire application process with zero opportunity for recovery. It also surrenders navigation control, forcing the host to react to the browser's decisions rather than driving them.
 
 **ChromiumAirlock** reverses that relationship:
-- **Fault & Crash Buffering**: Chromium runs in its own process tree on the other side of the airlock. If Chromium crashes, your application hull remains intact, retaining full control to restart, inspect, or tear down the engine.
+- **Fault & Crash Buffering**: Chromium runs in its own process tree on the other side of the airlock. If Chromium crashes, your application hull remains intact, retaining full control to restart the engine.
 - **Host Sovereignty**: The browser engine is reduced to what it is best at: fetching web resources, executing JavaScript, and rendering pages. All authority over navigation, popups, window creation, downloads, and lifecycle decisions remains with the host application.
 - **Language & Runtime Agnostic**: Because communication takes place over standard protocols, host applications do not need to link C/C++ runtimes or match Chromium's compiler toolchains. Any environment capable of opening a local WebSocket can control the browser.
 
