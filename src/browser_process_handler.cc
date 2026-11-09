@@ -72,9 +72,10 @@ void BrowserProcessHandler::RemoveBrowserHandler(int browserId) {
   }
 }
 
-void BrowserProcessHandler::RegisterBrowser(int browserId,
-                                            CefRefPtr<BrowserHandler> browserHandler,
-                                            CefRefPtr<CefBrowser> browser) {
+void BrowserProcessHandler::RegisterBrowser(
+    int browserId,
+    CefRefPtr<BrowserHandler> browserHandler,
+    CefRefPtr<CefBrowser> browser) {
   std::lock_guard<std::mutex> lock(entriesMutex);
   browserEntries[browserId] = std::make_pair(browserHandler, browser);
 }
@@ -103,7 +104,8 @@ void BrowserProcessHandler::OnServerCreated(CefRefPtr<CefServer> server_) {
 
   if (serverReadyEventName.has_value()) {
     HANDLE hEvent =
-        OpenEventW(EVENT_MODIFY_STATE, FALSE, serverReadyEventName.value().ToWString().c_str());
+        OpenEventW(EVENT_MODIFY_STATE, FALSE,
+                   serverReadyEventName.value().ToWString().c_str());
     if (hEvent != NULL) {
       SetEvent(hEvent);
       CloseHandle(hEvent);
@@ -189,8 +191,7 @@ void BrowserProcessHandler::OnWebSocketMessage(CefRefPtr<CefServer> server_,
     if (jsonMessageDictionary->HasKey("result")) {
       CefString requestId = jsonMessageDictionary->GetString("id");
       bool success = jsonMessageDictionary->GetBool("success");
-      CefRefPtr<CefValue> result =
-          jsonMessageDictionary->GetValue("result");
+      CefRefPtr<CefValue> result = jsonMessageDictionary->GetValue("result");
       CefRefPtr<CefValue> error = jsonMessageDictionary->GetValue("error");
       this->HandleRpcResponse(requestId, success, result, error);
     } else {
@@ -200,22 +201,22 @@ void BrowserProcessHandler::OnWebSocketMessage(CefRefPtr<CefServer> server_,
       CefString methodName = jsonMessageDictionary->GetString("method");
       CefRefPtr<CefDictionaryValue> arguments =
           jsonMessageDictionary->GetDictionary("arguments");
-      this->HandleRpcRequest(requestId, className, instanceId, methodName, arguments);
+      this->HandleRpcRequest(requestId, className, instanceId, methodName,
+                             arguments);
     }
   } catch (const std::exception& e) {
     LOG(ERROR) << "OnWebSocketMessage: exception during dispatch: " << e.what();
   }
 }
 
-void BrowserProcessHandler::CreateBrowser(
-    const CefString& requestId,
-    const CefString& url,
-    const CefPoint& windowOrigin,
-    const CefRect& rectangle,
-    HWND parentWindowHandle,
-    bool windowless,
-    bool hardwareAccelerated,
-    bool private_) {
+void BrowserProcessHandler::CreateBrowser(const CefString& requestId,
+                                          const CefString& url,
+                                          const CefPoint& windowOrigin,
+                                          const CefRect& rectangle,
+                                          HWND parentWindowHandle,
+                                          bool windowless,
+                                          bool hardwareAccelerated,
+                                          bool private_) {
   CefWindowInfo windowInfo;
   if (windowless) {
     windowInfo.SetAsWindowless(parentWindowHandle);
@@ -301,15 +302,13 @@ void BrowserProcessHandler::Shutdown() {
   }
 }
 
-void BrowserProcessHandler::CloseBrowser(
-    const CefRefPtr<CefBrowser> browser,
-    bool forceClose) {
+void BrowserProcessHandler::CloseBrowser(const CefRefPtr<CefBrowser> browser,
+                                         bool forceClose) {
   browser->GetHost()->CloseBrowser(forceClose);
 }
 
-void BrowserProcessHandler::TryCloseBrowser(
-    const CefRefPtr<CefBrowser> browser,
-    const CefString& requestId) {
+void BrowserProcessHandler::TryCloseBrowser(const CefRefPtr<CefBrowser> browser,
+                                            const CefString& requestId) {
   bool canClose = browser->GetHost()->TryCloseBrowser();
   CefRefPtr<CefValue> result = CefValue::Create();
   result->SetBool(canClose);
@@ -332,7 +331,8 @@ void BrowserProcessHandler::SendMessage(const CefString& payload) {
   }
 
   const std::string& str = payload.ToString();
-  server->SendWebSocketMessage(activeConnectionId.value(), str.data(), str.size());
+  server->SendWebSocketMessage(activeConnectionId.value(), str.data(),
+                               str.size());
 }
 
 CefString BrowserProcessHandler::SendRequest(
@@ -403,7 +403,8 @@ void BrowserProcessHandler::SendDoesNotUnderstandErrorResponse(
     const CefString& requestId,
     const CefString& className,
     const CefString& methodName) {
-  this->SendErrorResponse(requestId, "Unknown method: " + className.ToString() + ">>" + methodName.ToString());
+  this->SendErrorResponse(requestId, "Unknown method: " + className.ToString() +
+                                         ">>" + methodName.ToString());
 }
 
 void BrowserProcessHandler::SendParseErrorResponse(const CefString& requestId,
@@ -419,9 +420,10 @@ void BrowserProcessHandler::SendParseErrorResponse(const CefString& requestId,
 
 void BrowserProcessHandler::SendLogMessage(const cef_log_severity_t severity,
                                            const CefString& message) {
-  if (severity == LOGSEVERITY_DEFAULT || severity == LOGSEVERITY_VERBOSE || severity == LOGSEVERITY_INFO) {
+  if (severity == LOGSEVERITY_DEFAULT || severity == LOGSEVERITY_VERBOSE ||
+      severity == LOGSEVERITY_INFO) {
     LOG(INFO) << message;
- } else if (severity == LOGSEVERITY_WARNING) {
+  } else if (severity == LOGSEVERITY_WARNING) {
     LOG(WARNING) << message;
   } else if (severity == LOGSEVERITY_ERROR) {
     LOG(ERROR) << message;
@@ -495,7 +497,8 @@ void BrowserProcessHandler::HandleRpcRequest(
     }
     auto cmd = RpcRegistry<HttpRequestCommand>::Lookup(methodName);
     if (!cmd) {
-      this->SendDoesNotUnderstandErrorResponse(requestId, className, methodName);
+      this->SendDoesNotUnderstandErrorResponse(requestId, className,
+                                               methodName);
       return;
     }
     auto err = cmd->Initialize(requestId, arguments);

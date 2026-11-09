@@ -6,8 +6,8 @@
 #include <string>
 #include <vector>
 
-#include "rpc_command.h"
 #include "browser_handler.h"
+#include "rpc_command.h"
 
 class BrowserProcessHandler;
 class BrowserHandler;
@@ -42,7 +42,6 @@ class LoadRequestCommand : public BrowserCommand {
                CefRefPtr<BrowserHandler> browserHandler) override;
 };
 REGISTER_RPC_COMMAND(BrowserCommand, "LoadRequest", LoadRequestCommand);
- 
 
 class ReloadCommand : public BrowserCommand {
  protected:
@@ -201,7 +200,7 @@ REGISTER_RPC_COMMAND(BrowserCommand, "SetWindowOrigin", SetWindowOriginCommand);
 class GetFrameRateCommand : public BrowserCommand {
  protected:
   void ReadArguments() override {}
- 
+
  public:
   void Execute(CefRefPtr<BrowserProcessHandler> handler,
                CefRefPtr<CefBrowser> browser,
@@ -237,7 +236,6 @@ class CloseCommand : public BrowserCommand {
 };
 REGISTER_RPC_COMMAND(BrowserCommand, "Close", CloseCommand);
 
-
 class TryCloseCommand : public BrowserCommand {
  protected:
   void ReadArguments() override {}
@@ -252,6 +250,7 @@ REGISTER_RPC_COMMAND(BrowserCommand, "TryClose", TryCloseCommand);
 class CutCommand : public BrowserCommand {
  protected:
   void ReadArguments() override {}
+
  public:
   void Execute(CefRefPtr<BrowserProcessHandler> handler,
                CefRefPtr<CefBrowser> browser,
@@ -262,6 +261,7 @@ REGISTER_RPC_COMMAND(BrowserCommand, "Cut", CutCommand);
 class CopyCommand : public BrowserCommand {
  protected:
   void ReadArguments() override {}
+
  public:
   void Execute(CefRefPtr<BrowserProcessHandler> handler,
                CefRefPtr<CefBrowser> browser,
@@ -272,6 +272,7 @@ REGISTER_RPC_COMMAND(BrowserCommand, "Copy", CopyCommand);
 class PasteCommand : public BrowserCommand {
  protected:
   void ReadArguments() override {}
+
  public:
   void Execute(CefRefPtr<BrowserProcessHandler> handler,
                CefRefPtr<CefBrowser> browser,
@@ -282,6 +283,7 @@ REGISTER_RPC_COMMAND(BrowserCommand, "Paste", PasteCommand);
 class DeleteCommand : public BrowserCommand {
  protected:
   void ReadArguments() override {}
+
  public:
   void Execute(CefRefPtr<BrowserProcessHandler> handler,
                CefRefPtr<CefBrowser> browser,
@@ -292,6 +294,7 @@ REGISTER_RPC_COMMAND(BrowserCommand, "Delete", DeleteCommand);
 class UndoCommand : public BrowserCommand {
  protected:
   void ReadArguments() override {}
+
  public:
   void Execute(CefRefPtr<BrowserProcessHandler> handler,
                CefRefPtr<CefBrowser> browser,
@@ -302,6 +305,7 @@ REGISTER_RPC_COMMAND(BrowserCommand, "Undo", UndoCommand);
 class RedoCommand : public BrowserCommand {
  protected:
   void ReadArguments() override {}
+
  public:
   void Execute(CefRefPtr<BrowserProcessHandler> handler,
                CefRefPtr<CefBrowser> browser,
@@ -312,6 +316,7 @@ REGISTER_RPC_COMMAND(BrowserCommand, "Redo", RedoCommand);
 class SelectAllCommand : public BrowserCommand {
  protected:
   void ReadArguments() override {}
+
  public:
   void Execute(CefRefPtr<BrowserProcessHandler> handler,
                CefRefPtr<CefBrowser> browser,
@@ -322,6 +327,7 @@ REGISTER_RPC_COMMAND(BrowserCommand, "SelectAll", SelectAllCommand);
 class GetSourceCommand : public BrowserCommand {
  protected:
   void ReadArguments() override {}
+
  public:
   void Execute(CefRefPtr<BrowserProcessHandler> handler,
                CefRefPtr<CefBrowser> browser,
@@ -332,6 +338,7 @@ REGISTER_RPC_COMMAND(BrowserCommand, "GetSource", GetSourceCommand);
 class GetTextCommand : public BrowserCommand {
  protected:
   void ReadArguments() override {}
+
  public:
   void Execute(CefRefPtr<BrowserProcessHandler> handler,
                CefRefPtr<CefBrowser> browser,
@@ -342,8 +349,10 @@ REGISTER_RPC_COMMAND(BrowserCommand, "GetText", GetTextCommand);
 class StartDownloadCommand : public BrowserCommand {
  public:
   CefString url;
+
  protected:
   void ReadArguments() override;
+
  public:
   void Execute(CefRefPtr<BrowserProcessHandler> handler,
                CefRefPtr<CefBrowser> browser,
@@ -357,8 +366,10 @@ class DownloadImageCommand : public BrowserCommand {
   bool isFavicon = false;
   int maxImageSize = 0;
   bool bypassCache = false;
+
  protected:
   void ReadArguments() override;
+
  public:
   void Execute(CefRefPtr<BrowserProcessHandler> handler,
                CefRefPtr<CefBrowser> browser,

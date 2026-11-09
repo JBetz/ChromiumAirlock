@@ -6,7 +6,8 @@ class BrowserProcessHandler;
 
 class HttpRequestClient : public CefURLRequestClient {
  public:
-  HttpRequestClient(CefRefPtr<BrowserProcessHandler> handler, int httpRequestId);
+  HttpRequestClient(CefRefPtr<BrowserProcessHandler> handler,
+                    int httpRequestId);
 
   void OnRequestComplete(CefRefPtr<CefURLRequest> request) override;
   void OnDownloadData(CefRefPtr<CefURLRequest> request,

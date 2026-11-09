@@ -99,7 +99,7 @@ class BrowserProcessHandler : public ProcessHandler,
   void TryCloseBrowser(const CefRefPtr<CefBrowser> browser,
                        const CefString& requestId);
   void GetBrowserFrameRate(const CefRefPtr<CefBrowser> browser,
-                    const CefString& requestId);
+                           const CefString& requestId);
   void RemoveHttpRequest(int httpRequestId);
 
   // Outgoing RPC messages.
@@ -110,8 +110,7 @@ class BrowserProcessHandler : public ProcessHandler,
   CefString SendRequest(const CefString& className,
                         int instanceId,
                         const CefString& methodName);
-  void SendResponse(const CefString& requestId,
-                    CefRefPtr<CefValue> result);
+  void SendResponse(const CefString& requestId, CefRefPtr<CefValue> result);
   void SendErrorResponse(const CefString& requestId, const CefString& message);
   void SendUnknownInstanceErrorResponse(const CefString& requestId,
                                         const CefString& className,

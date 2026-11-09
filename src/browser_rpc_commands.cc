@@ -87,8 +87,8 @@ void LoadRequestCommand::ReadArguments() {
 }
 
 void LoadRequestCommand::Execute(CefRefPtr<BrowserProcessHandler> handler,
-                                CefRefPtr<CefBrowser> browser,
-                                CefRefPtr<BrowserHandler> browserHandler) {
+                                 CefRefPtr<CefBrowser> browser,
+                                 CefRefPtr<BrowserHandler> browserHandler) {
   auto frame = browser->GetMainFrame();
   auto request = CefRequest::Create();
   request->SetURL(url);
@@ -110,7 +110,7 @@ void LoadRequestCommand::Execute(CefRefPtr<BrowserProcessHandler> handler,
 }
 
 void ReloadCommand::Execute(CefRefPtr<BrowserProcessHandler> handler,
-                            CefRefPtr<CefBrowser> browser, 
+                            CefRefPtr<CefBrowser> browser,
                             CefRefPtr<BrowserHandler> browserHandler) {
   browser->Reload();
 }
@@ -125,8 +125,7 @@ void EvaluateJavaScriptCommand::Execute(
     CefRefPtr<BrowserProcessHandler> handler,
     CefRefPtr<CefBrowser> browser,
     CefRefPtr<BrowserHandler> browserHandler) {
-  CefRefPtr<CefProcessMessage> message =
-      CefProcessMessage::Create("Eval");
+  CefRefPtr<CefProcessMessage> message = CefProcessMessage::Create("Eval");
   CefRefPtr<CefListValue> args = message->GetArgumentList();
   args->SetString(0, id);
   args->SetString(1, code);
@@ -142,10 +141,9 @@ void OnMouseClickCommand::ReadArguments() {
   Require("clickCount", clickCount);
 }
 
-void OnMouseClickCommand::Execute(
-    CefRefPtr<BrowserProcessHandler> handler,
-    CefRefPtr<CefBrowser> browser,
-    CefRefPtr<BrowserHandler> browserHandler) {
+void OnMouseClickCommand::Execute(CefRefPtr<BrowserProcessHandler> handler,
+                                  CefRefPtr<CefBrowser> browser,
+                                  CefRefPtr<BrowserHandler> browserHandler) {
   browser->GetHost()->SendMouseClickEvent(
       event, static_cast<CefBrowserHost::MouseButtonType>(button), mouseUp,
       clickCount);
@@ -156,10 +154,9 @@ void OnMouseMoveCommand::ReadArguments() {
   Require("mouseLeave", mouseLeave);
 }
 
-void OnMouseMoveCommand::Execute(
-    CefRefPtr<BrowserProcessHandler> handler,
-    CefRefPtr<CefBrowser> browser,
-    CefRefPtr<BrowserHandler> browserHandler) {
+void OnMouseMoveCommand::Execute(CefRefPtr<BrowserProcessHandler> handler,
+                                 CefRefPtr<CefBrowser> browser,
+                                 CefRefPtr<BrowserHandler> browserHandler) {
   browser->GetHost()->SendMouseMoveEvent(event, mouseLeave);
 }
 
@@ -169,10 +166,9 @@ void OnMouseWheelCommand::ReadArguments() {
   Require("deltaY", deltaY);
 }
 
-void OnMouseWheelCommand::Execute(
-    CefRefPtr<BrowserProcessHandler> handler,
-    CefRefPtr<CefBrowser> browser,
-    CefRefPtr<BrowserHandler> browserHandler) {
+void OnMouseWheelCommand::Execute(CefRefPtr<BrowserProcessHandler> handler,
+                                  CefRefPtr<CefBrowser> browser,
+                                  CefRefPtr<BrowserHandler> browserHandler) {
   browser->GetHost()->SendMouseWheelEvent(event, deltaX, deltaY);
 }
 
@@ -187,10 +183,9 @@ void OnKeyboardEventCommand::ReadArguments() {
   Require("focusOnEditableField", focusOnEditableField);
 }
 
-void OnKeyboardEventCommand::Execute(
-    CefRefPtr<BrowserProcessHandler> handler,
-    CefRefPtr<CefBrowser> browser,
-    CefRefPtr<BrowserHandler> browserHandler) {
+void OnKeyboardEventCommand::Execute(CefRefPtr<BrowserProcessHandler> handler,
+                                     CefRefPtr<CefBrowser> browser,
+                                     CefRefPtr<BrowserHandler> browserHandler) {
   CefKeyEvent keyEvent;
   keyEvent.size = sizeof(CefKeyEvent);
   keyEvent.type = static_cast<cef_key_event_type_t>(type);
@@ -214,8 +209,8 @@ void FocusCommand::ReadArguments() {
 }
 
 void FocusCommand::Execute(CefRefPtr<BrowserProcessHandler> handler,
-                                  CefRefPtr<CefBrowser> browser,
-                                  CefRefPtr<BrowserHandler> browserHandler) {
+                           CefRefPtr<CefBrowser> browser,
+                           CefRefPtr<BrowserHandler> browserHandler) {
   browser->GetHost()->SetFocus(focus);
 }
 
@@ -223,10 +218,9 @@ void WasHiddenCommand::ReadArguments() {
   Require("hidden", hidden);
 }
 
-void WasHiddenCommand::Execute(
-    CefRefPtr<BrowserProcessHandler> handler,
-    CefRefPtr<CefBrowser> browser,
-    CefRefPtr<BrowserHandler> browserHandler) {
+void WasHiddenCommand::Execute(CefRefPtr<BrowserProcessHandler> handler,
+                               CefRefPtr<CefBrowser> browser,
+                               CefRefPtr<BrowserHandler> browserHandler) {
   browser->GetHost()->WasHidden(hidden);
 }
 
@@ -234,10 +228,9 @@ void WasResizedCommand::ReadArguments() {
   Require("rectangle", rectangle);
 }
 
-void WasResizedCommand::Execute(
-    CefRefPtr<BrowserProcessHandler> handler,
-    CefRefPtr<CefBrowser> browser,
-    CefRefPtr<BrowserHandler> browserHandler) {
+void WasResizedCommand::Execute(CefRefPtr<BrowserProcessHandler> handler,
+                                CefRefPtr<CefBrowser> browser,
+                                CefRefPtr<BrowserHandler> browserHandler) {
   browserHandler->SetPageRectangle(rectangle);
   browser->GetHost()->WasResized();
 }
@@ -246,18 +239,17 @@ void SetWindowOriginCommand::ReadArguments() {
   Require("origin", origin);
 }
 
-void SetWindowOriginCommand::Execute(
-    CefRefPtr<BrowserProcessHandler> handler,
-    CefRefPtr<CefBrowser> browser,
-    CefRefPtr<BrowserHandler> browserHandler) {
+void SetWindowOriginCommand::Execute(CefRefPtr<BrowserProcessHandler> handler,
+                                     CefRefPtr<CefBrowser> browser,
+                                     CefRefPtr<BrowserHandler> browserHandler) {
   browserHandler->SetWindowOrigin(origin);
 }
 
-void GetFrameRateCommand::Execute(
-    CefRefPtr<BrowserProcessHandler> handler,
-    CefRefPtr<CefBrowser> browser,
-    CefRefPtr<BrowserHandler> browserHandler) {
-  CefPostTask(TID_UI, base::BindOnce(&BrowserProcessHandler::GetBrowserFrameRate,
+void GetFrameRateCommand::Execute(CefRefPtr<BrowserProcessHandler> handler,
+                                  CefRefPtr<CefBrowser> browser,
+                                  CefRefPtr<BrowserHandler> browserHandler) {
+  CefPostTask(TID_UI,
+              base::BindOnce(&BrowserProcessHandler::GetBrowserFrameRate,
                              handler, browser, id));
 }
 
@@ -265,10 +257,9 @@ void SetFrameRateCommand::ReadArguments() {
   Require("frameRate", frameRate);
 }
 
-void SetFrameRateCommand::Execute(
-    CefRefPtr<BrowserProcessHandler> handler,
-    CefRefPtr<CefBrowser> browser,
-    CefRefPtr<BrowserHandler> browserHandler) {
+void SetFrameRateCommand::Execute(CefRefPtr<BrowserProcessHandler> handler,
+                                  CefRefPtr<CefBrowser> browser,
+                                  CefRefPtr<BrowserHandler> browserHandler) {
   browser->GetHost()->SetWindowlessFrameRate(frameRate);
 }
 
@@ -277,65 +268,64 @@ void CloseCommand::ReadArguments() {
 }
 
 void CloseCommand::Execute(CefRefPtr<BrowserProcessHandler> handler,
-                                  CefRefPtr<CefBrowser> browser,
-                                  CefRefPtr<BrowserHandler> browserHandler) {
+                           CefRefPtr<CefBrowser> browser,
+                           CefRefPtr<BrowserHandler> browserHandler) {
   CefPostTask(TID_UI, base::BindOnce(&BrowserProcessHandler::CloseBrowser,
                                      handler, browser, forceClose));
 }
 
 void TryCloseCommand::Execute(CefRefPtr<BrowserProcessHandler> handler,
-                                     CefRefPtr<CefBrowser> browser,
-                                     CefRefPtr<BrowserHandler> browserHandler) {
-  CefPostTask(TID_UI,
-              base::BindOnce(&BrowserProcessHandler::TryCloseBrowser,
-                             handler, browser, id));
+                              CefRefPtr<CefBrowser> browser,
+                              CefRefPtr<BrowserHandler> browserHandler) {
+  CefPostTask(TID_UI, base::BindOnce(&BrowserProcessHandler::TryCloseBrowser,
+                                     handler, browser, id));
 }
 
 void CutCommand::Execute(CefRefPtr<BrowserProcessHandler> handler,
-                                 CefRefPtr<CefBrowser> browser,
-                                 CefRefPtr<BrowserHandler> browserHandler) {
+                         CefRefPtr<CefBrowser> browser,
+                         CefRefPtr<BrowserHandler> browserHandler) {
   browser->GetFocusedFrame()->Cut();
 }
 
 void CopyCommand::Execute(CefRefPtr<BrowserProcessHandler> handler,
-                                  CefRefPtr<CefBrowser> browser,
-                                  CefRefPtr<BrowserHandler> browserHandler) {
+                          CefRefPtr<CefBrowser> browser,
+                          CefRefPtr<BrowserHandler> browserHandler) {
   browser->GetFocusedFrame()->Copy();
 }
 
 void PasteCommand::Execute(CefRefPtr<BrowserProcessHandler> handler,
-                                   CefRefPtr<CefBrowser> browser,
-                                   CefRefPtr<BrowserHandler> browserHandler) {
+                           CefRefPtr<CefBrowser> browser,
+                           CefRefPtr<BrowserHandler> browserHandler) {
   browser->GetFocusedFrame()->Paste();
 }
 
 void DeleteCommand::Execute(CefRefPtr<BrowserProcessHandler> handler,
-                                    CefRefPtr<CefBrowser> browser,
-                                    CefRefPtr<BrowserHandler> browserHandler) {
+                            CefRefPtr<CefBrowser> browser,
+                            CefRefPtr<BrowserHandler> browserHandler) {
   browser->GetFocusedFrame()->Delete();
 }
 
 void UndoCommand::Execute(CefRefPtr<BrowserProcessHandler> handler,
-                                    CefRefPtr<CefBrowser> browser,
-                                    CefRefPtr<BrowserHandler> browserHandler) {
+                          CefRefPtr<CefBrowser> browser,
+                          CefRefPtr<BrowserHandler> browserHandler) {
   browser->GetFocusedFrame()->Undo();
 }
 
 void RedoCommand::Execute(CefRefPtr<BrowserProcessHandler> handler,
-                                    CefRefPtr<CefBrowser> browser,
-                                    CefRefPtr<BrowserHandler> browserHandler) {
+                          CefRefPtr<CefBrowser> browser,
+                          CefRefPtr<BrowserHandler> browserHandler) {
   browser->GetFocusedFrame()->Redo();
 }
 
 void SelectAllCommand::Execute(CefRefPtr<BrowserProcessHandler> handler,
-                                    CefRefPtr<CefBrowser> browser,
-                                    CefRefPtr<BrowserHandler> browserHandler) {
+                               CefRefPtr<CefBrowser> browser,
+                               CefRefPtr<BrowserHandler> browserHandler) {
   browser->GetFocusedFrame()->SelectAll();
 }
 
 void GetSourceCommand::Execute(CefRefPtr<BrowserProcessHandler> handler,
-                                    CefRefPtr<CefBrowser> browser,
-                                    CefRefPtr<BrowserHandler> browserHandler) {
+                               CefRefPtr<CefBrowser> browser,
+                               CefRefPtr<BrowserHandler> browserHandler) {
   CefRefPtr<CefFrame> frame = browser->GetMainFrame();
   CefRefPtr<GetSourceStringVisitor> visitor =
       new GetSourceStringVisitor(handler, id);
@@ -343,8 +333,8 @@ void GetSourceCommand::Execute(CefRefPtr<BrowserProcessHandler> handler,
 }
 
 void GetTextCommand::Execute(CefRefPtr<BrowserProcessHandler> handler,
-                                  CefRefPtr<CefBrowser> browser,
-                                  CefRefPtr<BrowserHandler> browserHandler) {
+                             CefRefPtr<CefBrowser> browser,
+                             CefRefPtr<BrowserHandler> browserHandler) {
   CefRefPtr<CefFrame> frame = browser->GetMainFrame();
   CefRefPtr<GetSourceStringVisitor> visitor =
       new GetSourceStringVisitor(handler, id);
@@ -356,8 +346,8 @@ void StartDownloadCommand::ReadArguments() {
 }
 
 void StartDownloadCommand::Execute(CefRefPtr<BrowserProcessHandler> handler,
-                                  CefRefPtr<CefBrowser> browser,
-                                  CefRefPtr<BrowserHandler> browserHandler) {
+                                   CefRefPtr<CefBrowser> browser,
+                                   CefRefPtr<BrowserHandler> browserHandler) {
   browser->GetHost()->StartDownload(url);
 }
 
@@ -369,11 +359,11 @@ void DownloadImageCommand::ReadArguments() {
 }
 
 void DownloadImageCommand::Execute(CefRefPtr<BrowserProcessHandler> handler,
-                                    CefRefPtr<CefBrowser> browser,
-                                    CefRefPtr<BrowserHandler> browserHandler) {
+                                   CefRefPtr<CefBrowser> browser,
+                                   CefRefPtr<BrowserHandler> browserHandler) {
   CefRefPtr<DownloadImageCallback> callback =
       new DownloadImageCallback(handler, id, url);
-  browser->GetHost()->DownloadImage(
-      url, isFavicon, static_cast<uint32_t>(maxImageSize), bypassCache,
-      callback);
+  browser->GetHost()->DownloadImage(url, isFavicon,
+                                    static_cast<uint32_t>(maxImageSize),
+                                    bypassCache, callback);
 }

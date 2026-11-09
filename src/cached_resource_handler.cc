@@ -1,6 +1,6 @@
 #include "cached_resource_handler.h"
-#include <algorithm>
 #include <windows.h>
+#include <algorithm>
 
 CachedResourceHandler::CachedResourceHandler(
     const CachedResourceResponse& cachedResponse)
@@ -8,8 +8,7 @@ CachedResourceHandler::CachedResourceHandler(
       statusCode(cachedResponse.statusCode),
       responseHeaders(cachedResponse.responseHeaders),
       offset(0) {
-  HANDLE handle =
-      reinterpret_cast<HANDLE>(cachedResponse.sharedMemoryHandle);
+  HANDLE handle = reinterpret_cast<HANDLE>(cachedResponse.sharedMemoryHandle);
   int size = cachedResponse.sharedMemorySize;
   if (handle && size > 0) {
     void* mappedView = MapViewOfFile(handle, FILE_MAP_READ, 0, 0, size);

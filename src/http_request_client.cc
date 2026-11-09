@@ -1,17 +1,16 @@
 #include "http_request_client.h"
 
-#include "browser_process_handler.h"
 #include <include/cef_parser.h>
+#include "browser_process_handler.h"
 
 HttpRequestClient::HttpRequestClient(CefRefPtr<BrowserProcessHandler> handler,
                                      int httpRequestId)
     : handler(handler), httpRequestId(httpRequestId) {}
 
-
 void HttpRequestClient::OnRequestComplete(CefRefPtr<CefURLRequest> request) {
   handler->RemoveHttpRequest(httpRequestId);
   CefRefPtr<CefDictionaryValue> arguments = CefDictionaryValue::Create();
- 
+
   if (request->GetRequestStatus() == UR_SUCCESS &&
       request->GetRequestError() == ERR_NONE) {
     CefRefPtr<CefResponse> response = request->GetResponse();
@@ -37,16 +36,17 @@ void HttpRequestClient::OnDownloadData(CefRefPtr<CefURLRequest> request,
                                        size_t data_length) {
   CefRefPtr<CefDictionaryValue> arguments = CefDictionaryValue::Create();
   arguments->SetBinary("data", CefBinaryValue::Create(data, data_length));
-  handler->SendRequest("HttpRequest", httpRequestId, 
-                       "OnDownloadData", arguments);
+  handler->SendRequest("HttpRequest", httpRequestId, "OnDownloadData",
+                       arguments);
 }
 
-bool HttpRequestClient::GetAuthCredentials(bool isProxy,
-                                           const CefString& host,
-                                           int port,
-                                           const CefString& realm,
-                                           const CefString& scheme,
-                                           CefRefPtr<CefAuthCallback> callback) {
+bool HttpRequestClient::GetAuthCredentials(
+    bool isProxy,
+    const CefString& host,
+    int port,
+    const CefString& realm,
+    const CefString& scheme,
+    CefRefPtr<CefAuthCallback> callback) {
   return false;
 }
 

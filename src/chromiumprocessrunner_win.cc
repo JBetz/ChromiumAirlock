@@ -82,7 +82,8 @@ int APIENTRY wWinMain(HINSTANCE hInstance,
   ProcessHandler::ProcessType process_type =
       ProcessHandler::GetProcessType(command_line);
 
-  LOG(INFO) << "Running process type: " << ProcessHandler::ProcessTypeToString(process_type);
+  LOG(INFO) << "Running process type: "
+            << ProcessHandler::ProcessTypeToString(process_type);
 
   if (process_type == ProcessHandler::BrowserProcess) {
     const std::string& server_port_str =
@@ -97,17 +98,17 @@ int APIENTRY wWinMain(HINSTANCE hInstance,
       return 1;
     }
     if (application_process_id_str.empty()) {
-      LOG(ERROR)  << "--application-process-id is required";
+      LOG(ERROR) << "--application-process-id is required";
       return 1;
     }
-    
 
     int serverPort = std::stoi(server_port_str);
     int applicationProcessId = std::stoi(application_process_id_str);
     HANDLE applicationProcessHandle =
         OpenProcess(PROCESS_DUP_HANDLE, FALSE, applicationProcessId);
     if (applicationProcessHandle == NULL) {
-      LOG(ERROR) << "OpenProcess failed for process id " << application_process_id_str;
+      LOG(ERROR) << "OpenProcess failed for process id "
+                 << application_process_id_str;
       return 1;
     }
     std::optional<CefString> serverReadyEventName;
@@ -116,8 +117,7 @@ int APIENTRY wWinMain(HINSTANCE hInstance,
     } else {
       serverReadyEventName = server_ready_event_name_str;
     }
-    handler = new BrowserProcessHandler(serverPort,
-                                        applicationProcessHandle,
+    handler = new BrowserProcessHandler(serverPort, applicationProcessHandle,
                                         serverReadyEventName);
   } else if (process_type == ProcessHandler::RendererProcess) {
     handler = new RenderProcessHandler();

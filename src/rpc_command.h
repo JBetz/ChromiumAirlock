@@ -1,10 +1,10 @@
 #pragma once
 
 #include <rpc.h>
-#include <memory>
-#include <string>
-#include <optional>
 #include <functional>
+#include <memory>
+#include <optional>
+#include <string>
 #include <unordered_map>
 
 #include "include/cef_base.h"
@@ -18,7 +18,7 @@ class RpcCommand {
  public:
   virtual ~RpcCommand() = default;
   std::optional<CefString> Initialize(const CefString& id,
-                                        CefRefPtr<CefDictionaryValue> args);
+                                      CefRefPtr<CefDictionaryValue> args);
 
  protected:
   CefString id;

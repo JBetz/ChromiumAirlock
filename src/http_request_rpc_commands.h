@@ -5,8 +5,8 @@
 class BrowserProcessHandler;
 
 class HttpRequestCommand : public RpcCommand {
-  public:
-    virtual void Execute(CefRefPtr<BrowserProcessHandler> handler,
+ public:
+  virtual void Execute(CefRefPtr<BrowserProcessHandler> handler,
                        CefRefPtr<CefURLRequest> request) = 0;
 };
 

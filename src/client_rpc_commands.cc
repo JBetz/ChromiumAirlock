@@ -19,7 +19,8 @@ void CreateBrowserCommand::ReadArguments() {
 
 void CreateBrowserCommand::Execute(CefRefPtr<BrowserProcessHandler> handler) {
   HWND parentHwnd = reinterpret_cast<HWND>(parentWindowHandle);
-  handler->CreateBrowser(id, url, windowOrigin, rectangle, parentHwnd, windowless, hardwareAccelerated, private_);
+  handler->CreateBrowser(id, url, windowOrigin, rectangle, parentHwnd,
+                         windowless, hardwareAccelerated, private_);
 }
 
 void CreateHttpRequestCommand::ReadArguments() {
@@ -29,19 +30,22 @@ void CreateHttpRequestCommand::ReadArguments() {
   Optional("body", body);
 }
 
-void CreateHttpRequestCommand::Execute(CefRefPtr<BrowserProcessHandler> handler) {
+void CreateHttpRequestCommand::Execute(
+    CefRefPtr<BrowserProcessHandler> handler) {
   handler->CreateHttpRequest(id, url, method, headers, body);
 }
 
 void ShutdownCommand::Execute(CefRefPtr<BrowserProcessHandler> handler) {
-  CefPostTask(TID_UI, base::BindOnce(&BrowserProcessHandler::Shutdown,
-                                     handler));
+  CefPostTask(TID_UI,
+              base::BindOnce(&BrowserProcessHandler::Shutdown, handler));
 }
 
-void GetPendingCallbacksCommand::Execute(CefRefPtr<BrowserProcessHandler> handler) {
+void GetPendingCallbacksCommand::Execute(
+    CefRefPtr<BrowserProcessHandler> handler) {
   CefRefPtr<CefListValue> pendingCallbackUuids = CefListValue::Create();
   for (auto const& imap : handler->GetPendingCallbacks()) {
-    pendingCallbackUuids->SetString(pendingCallbackUuids->GetSize(), imap.first);
+    pendingCallbackUuids->SetString(pendingCallbackUuids->GetSize(),
+                                    imap.first);
   }
   CefRefPtr<CefValue> value = CefValue::Create();
   value->SetList(pendingCallbackUuids);
@@ -52,7 +56,7 @@ void CancelPendingCallbackCommand::ReadArguments() {
   Require("requestId", requestId);
 }
 
-
-void CancelPendingCallbackCommand::Execute(CefRefPtr<BrowserProcessHandler> handler) {
+void CancelPendingCallbackCommand::Execute(
+    CefRefPtr<BrowserProcessHandler> handler) {
   handler->CancelPendingCallback(requestId);
 }

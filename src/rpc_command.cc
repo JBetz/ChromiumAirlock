@@ -1,7 +1,7 @@
 #include "rpc_command.h"
 
-#include <optional>
 #include <functional>
+#include <optional>
 #include <unordered_map>
 
 #include <include/base/cef_bind.h>

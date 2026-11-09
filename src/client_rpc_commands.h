@@ -59,11 +59,11 @@ class ShutdownCommand : public ClientCommand {
 REGISTER_RPC_COMMAND(ClientCommand, "Shutdown", ShutdownCommand);
 
 class GetPendingCallbacksCommand : public ClientCommand {
-  protected:
-   void ReadArguments() override {}
+ protected:
+  void ReadArguments() override {}
 
-  public:
-   void Execute(CefRefPtr<BrowserProcessHandler> handler) override;
+ public:
+  void Execute(CefRefPtr<BrowserProcessHandler> handler) override;
 };
 REGISTER_RPC_COMMAND(ClientCommand,
                      "GetPendingCallbacks",

@@ -25,7 +25,7 @@ class BrowserHandler : public CefClient,
                  CefString creationRequestId,
                  CefPoint windowOrigin,
                  CefRect pageRectangle);
-  
+
   void MarkCreated();
   void MarkDestroyed();
   void SetPageRectangle(CefRect rectangle);
@@ -111,8 +111,8 @@ class BrowserHandler : public CefClient,
 
   // CefRequestHandler:
   bool OnBeforeBrowse(CefRefPtr<CefBrowser> browser,
-                       CefRefPtr<CefFrame> frame,
-                       CefRefPtr<CefRequest> request,
+                      CefRefPtr<CefFrame> frame,
+                      CefRefPtr<CefRequest> request,
                       bool user_gesture,
                       bool is_redirect) override;
 
@@ -123,8 +123,13 @@ class BrowserHandler : public CefClient,
       CefLifeSpanHandler::WindowOpenDisposition target_disposition,
       bool user_gesture) override;
   void OnRenderProcessResponsive(CefRefPtr<CefBrowser> browser) override;
-  void OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser, TerminationStatus status, int error_code, const CefString& error_string) override;
-  bool OnRenderProcessUnresponsive(CefRefPtr<CefBrowser> browser, CefRefPtr<CefUnresponsiveProcessCallback> callback) override;
+  void OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser,
+                                 TerminationStatus status,
+                                 int error_code,
+                                 const CefString& error_string) override;
+  bool OnRenderProcessUnresponsive(
+      CefRefPtr<CefBrowser> browser,
+      CefRefPtr<CefUnresponsiveProcessCallback> callback) override;
   void OnRenderViewReady(CefRefPtr<CefBrowser> browser) override;
 
   // CefContextMenuHandler:
@@ -178,7 +183,8 @@ class BrowserHandler : public CefClient,
                          CefRefPtr<CefDownloadItemCallback> callback) override;
 
  private:
-  void DispatchDownloadAction(CefRefPtr<CefDownloadItemCallback> callback, std::string action);
+  void DispatchDownloadAction(CefRefPtr<CefDownloadItemCallback> callback,
+                              std::string action);
 
   using TimePoint = std::chrono::steady_clock::time_point;
 
