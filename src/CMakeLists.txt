@@ -6,7 +6,7 @@
 # Source files.
 #
 
-# cefprocessrunner sources.
+# chromiumprocessrunner sources.
 set(CHROMIUMPROCESSRUNNER_SRCS
   browser_handler.cc
   browser_handler.h
@@ -38,7 +38,7 @@ set(CHROMIUMPROCESSRUNNER_SRCS
 set(CHROMIUMPROCESSRUNNER_SRCS_WINDOWS
   chromiumprocessrunner_win.cc)
 APPEND_PLATFORM_SOURCES(CHROMIUMPROCESSRUNNER_SRCS)
-source_group(cefprocessrunner FILES ${CHROMIUMPROCESSRUNNER_SRCS})
+source_group(chromiumprocessrunner FILES ${CHROMIUMPROCESSRUNNER_SRCS})
 
 set(CHROMIUMPROCESSRUNNER_SRCS
   ${CHROMIUMPROCESSRUNNER_SRCS}
