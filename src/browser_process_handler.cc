@@ -213,7 +213,7 @@ void BrowserProcessHandler::CreateBrowser(const CefString& requestId,
                                           const CefString& url,
                                           const CefPoint& windowOrigin,
                                           const CefRect& rectangle,
-                                          HWND parentWindowHandle,
+                                          CefWindowHandle parentWindowHandle,
                                           bool windowless,
                                           bool hardwareAccelerated,
                                           bool private_) {

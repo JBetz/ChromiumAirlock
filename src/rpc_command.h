@@ -64,6 +64,9 @@ class RpcCommand {
                            int64_t& v);
   static bool ExtractValue(CefRefPtr<CefDictionaryValue> dict,
                            const CefString& k,
+                           CefWindowHandle& v);
+  static bool ExtractValue(CefRefPtr<CefDictionaryValue> dict,
+                           const CefString& k,
                            double& v);
   static bool ExtractValue(CefRefPtr<CefDictionaryValue> dict,
                            const CefString& k,

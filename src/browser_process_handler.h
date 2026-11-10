@@ -1,7 +1,6 @@
 #pragma once
 
 #include <rpc.h>
-#include <windows.h>
 #include <functional>
 #include <map>
 #include <mutex>
@@ -84,7 +83,7 @@ class BrowserProcessHandler : public ProcessHandler,
                      const CefString& url,
                      const CefPoint& windowOrigin,
                      const CefRect& rectangle,
-                     HWND parentWindowHandle,
+                     CefWindowHandle parentWindowHandle,
                      bool windowless,
                      bool hardwareAccelerated,
                      bool private_);

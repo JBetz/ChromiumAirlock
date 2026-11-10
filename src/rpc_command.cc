@@ -75,6 +75,16 @@ bool RpcCommand::ExtractValue(CefRefPtr<CefDictionaryValue> dict,
 
 bool RpcCommand::ExtractValue(CefRefPtr<CefDictionaryValue> dict,
                               const CefString& k,
+                              CefWindowHandle& v) {
+  if (dict->GetType(k) == VTYPE_INT) {
+    v = (CefWindowHandle)(uintptr_t) dict->GetInt(k);
+    return true;
+  }
+  return false;
+}
+
+bool RpcCommand::ExtractValue(CefRefPtr<CefDictionaryValue> dict,
+                              const CefString& k,
                               double& v) {
   if (dict->GetType(k) == VTYPE_DOUBLE) {
     v = dict->GetDouble(k);
