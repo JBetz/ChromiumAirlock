@@ -85,10 +85,12 @@ if(OS_WINDOWS)
   
   if(INSTALL_DIR)
     add_custom_command(TARGET ${CEF_TARGET} POST_BUILD
-      COMMAND ${CMAKE_COMMAND} -E copy
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different
       $<TARGET_FILE:${CEF_TARGET}>
       "${INSTALL_DIR}/$<TARGET_FILE_NAME:${CEF_TARGET}>"
-      COMMENT "Copying ${CEF_TARGET} to ${INSTALL_DIR}"
+      COMMENT "Copying ${CEF_TARGET} executable to ${INSTALL_DIR}"
     )
+    COPY_FILES("${CEF_TARGET}" "${CEF_BINARY_FILES}" "${CEF_BINARY_DIR}" "${INSTALL_DIR}")
+    COPY_FILES("${CEF_TARGET}" "${CEF_RESOURCE_FILES}" "${CEF_RESOURCE_DIR}" "${INSTALL_DIR}")
   endif()
 endif()
